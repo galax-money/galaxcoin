@@ -39,6 +39,7 @@ bool serialize(EllipticCurvePoint& ecPoint, Common::StringView name, CryptoNote:
 namespace CryptoNote {
 
 struct AccountKeys;
+struct TransactionExtraMergeMiningTag;
 
 enum class SerializationTag : uint8_t { Base = 0xff, Key = 0x2, Transaction = 0xcc, Block = 0xbb };
 
