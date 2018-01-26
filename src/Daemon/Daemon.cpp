@@ -1,27 +1,50 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// Copyright (c) 2012-2017, The CryptoNote developers, The Bytecoin developers
+//
+// This file is part of Bytecoin.
+//
+// Bytecoin is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Bytecoin is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "version.h"
+
+#include <fstream>
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
 #include "DaemonCommandsHandler.h"
 
+#include "Common/ScopeExit.h"
 #include "Common/SignalHandler.h"
+#include "Common/StdOutputStream.h"
+#include "Common/StdInputStream.h"
 #include "Common/PathTools.h"
+#include "Common/Util.h"
 #include "crypto/hash.h"
 #include "CryptoNoteCore/Core.h"
-#include "CryptoNoteCore/CoreConfig.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
+
 #include "CryptoNoteCore/Currency.h"
+#include "CryptoNoteCore/DatabaseBlockchainCache.h"
+#include "CryptoNoteCore/DatabaseBlockchainCacheFactory.h"
+#include "CryptoNoteCore/MainChainStorage.h"
 #include "CryptoNoteCore/MinerConfig.h"
+#include "CryptoNoteCore/RocksDBWrapper.h"
 #include "CryptoNoteProtocol/CryptoNoteProtocolHandler.h"
 #include "P2p/NetNode.h"
 #include "P2p/NetNodeConfig.h"
 #include "Rpc/RpcServer.h"
 #include "Rpc/RpcServerConfig.h"
+#include "Serialization/BinaryInputStreamSerializer.h"
+#include "Serialization/BinaryOutputStreamSerializer.h"
 #include "version.h"
 
 #include "Logging/ConsoleLogger.h"
@@ -77,11 +100,10 @@ JsonValue buildLoggerConfiguration(Level level, const std::string& logfile) {
   JsonValue& consoleLogger = cfgLoggers.pushBack(JsonValue::OBJECT);
   consoleLogger.insert("type", "console");
   consoleLogger.insert("level", static_cast<int64_t>(TRACE));
-  consoleLogger.insert("pattern", "%T %L ");
+  consoleLogger.insert("pattern", "%D %T %L ");
 
   return loggerConfiguration;
 }
-
 
 int main(int argc, char* argv[])
 {
@@ -94,7 +116,6 @@ int main(int argc, char* argv[])
   LoggerRef logger(logManager, "daemon");
 
   try {
-
     po::options_description desc_cmd_only("Command line options");
     po::options_description desc_cmd_sett("Command line options and settings options");
 
@@ -112,14 +133,14 @@ int main(int argc, char* argv[])
     command_line::add_arg(desc_cmd_sett, arg_print_genesis_tx);
 
     RpcServerConfig::initOptions(desc_cmd_sett);
-    CoreConfig::initOptions(desc_cmd_sett);
     NetNodeConfig::initOptions(desc_cmd_sett);
-    MinerConfig::initOptions(desc_cmd_sett);
+    DataBaseConfig::initOptions(desc_cmd_sett);
 
     po::options_description desc_options("Allowed options");
     desc_options.add(desc_cmd_only).add(desc_cmd_sett);
 
     po::variables_map vm;
+    boost::filesystem::path data_dir_path;
     bool r = command_line::handle_error_helper(desc_options, [&]()
     {
       po::store(po::parse_command_line(argc, argv, desc_options), vm);
@@ -139,7 +160,7 @@ int main(int argc, char* argv[])
       std::string data_dir = command_line::get_arg(vm, command_line::arg_data_dir);
       std::string config = command_line::get_arg(vm, arg_config_file);
 
-      boost::filesystem::path data_dir_path(data_dir);
+      data_dir_path = data_dir;
       boost::filesystem::path config_path(config);
       if (!config_path.has_parent_path()) {
         config_path = data_dir_path / config_path;
@@ -197,71 +218,76 @@ int main(int argc, char* argv[])
     }
 
     CryptoNote::Currency currency = currencyBuilder.currency();
-    CryptoNote::core ccore(currency, nullptr, logManager);
 
     CryptoNote::Checkpoints checkpoints(logManager);
-    for (const auto& cp : CryptoNote::CHECKPOINTS) {
-      checkpoints.add_checkpoint(cp.height, cp.blockId);
-    }
-
     if (!testnet_mode) {
-      ccore.set_checkpoints(std::move(checkpoints));
+      for (const auto& cp : CryptoNote::CHECKPOINTS) {
+        checkpoints.addCheckpoint(cp.index, cp.blockId);
+      }
     }
-
-    CoreConfig coreConfig;
-    coreConfig.init(vm);
+    
     NetNodeConfig netNodeConfig;
     netNodeConfig.init(vm);
     netNodeConfig.setTestnet(testnet_mode);
-    MinerConfig minerConfig;
-    minerConfig.init(vm);
+
     RpcServerConfig rpcConfig;
     rpcConfig.init(vm);
 
-    if (!coreConfig.configFolderDefaulted) {
-      if (!Tools::directoryExists(coreConfig.configFolder)) {
-        throw std::runtime_error("Directory does not exist: " + coreConfig.configFolder);
+    DataBaseConfig dbConfig;
+    dbConfig.init(vm);
+
+    if (dbConfig.isConfigFolderDefaulted()) {
+      if (!Tools::create_directories_if_necessary(dbConfig.getDataDir())) {
+        throw std::runtime_error("Can't create directory: " + dbConfig.getDataDir());
       }
     } else {
-      if (!Tools::create_directories_if_necessary(coreConfig.configFolder)) {
-        throw std::runtime_error("Can't create directory: " + coreConfig.configFolder);
+      if (!Tools::directoryExists(dbConfig.getDataDir())) {
+        throw std::runtime_error("Directory does not exist: " + dbConfig.getDataDir());
       }
     }
 
+    RocksDBWrapper database(logManager);
+    database.init(dbConfig);
+    Tools::ScopeExit dbShutdownOnExit([&database] () { database.shutdown(); });
+
+    if (!DatabaseBlockchainCache::checkDBSchemeVersion(database, logManager))
+    {
+      dbShutdownOnExit.cancel();
+      database.shutdown();
+
+      database.destoy(dbConfig);
+
+      database.init(dbConfig);
+      dbShutdownOnExit.resume();
+    }
+
     System::Dispatcher dispatcher;
+    logger(INFO) << "Initializing core...";
+    CryptoNote::Core ccore(
+      currency,
+      logManager,
+      std::move(checkpoints),
+      dispatcher,
+      std::unique_ptr<IBlockchainCacheFactory>(new DatabaseBlockchainCacheFactory(database, logger.getLogger())),
+      createSwappedMainChainStorage(data_dir_path.string(), currency));
+
+    ccore.load();
+    logger(INFO) << "Core initialized OK";
 
     CryptoNote::CryptoNoteProtocolHandler cprotocol(currency, dispatcher, ccore, nullptr, logManager);
     CryptoNote::NodeServer p2psrv(dispatcher, cprotocol, logManager);
     CryptoNote::RpcServer rpcServer(dispatcher, logManager, ccore, p2psrv, cprotocol);
 
     cprotocol.set_p2p_endpoint(&p2psrv);
-    ccore.set_cryptonote_protocol(&cprotocol);
     DaemonCommandsHandler dch(ccore, p2psrv, logManager);
-
-    // initialize objects
     logger(INFO) << "Initializing p2p server...";
     if (!p2psrv.init(netNodeConfig)) {
       logger(ERROR, BRIGHT_RED) << "Failed to initialize p2p server.";
       return 1;
     }
+
     logger(INFO) << "P2p server initialized OK";
 
-    //logger(INFO) << "Initializing core rpc server...";
-    //if (!rpc_server.init(vm)) {
-    //  logger(ERROR, BRIGHT_RED) << "Failed to initialize core rpc server.";
-    //  return 1;
-    //}
-    // logger(INFO, BRIGHT_GREEN) << "Core rpc server initialized OK on port: " << rpc_server.get_binded_port();
-
-    // initialize core here
-    logger(INFO) << "Initializing core...";
-    if (!ccore.init(coreConfig, minerConfig, true)) {
-      logger(ERROR, BRIGHT_RED) << "Failed to initialize core";
-      return 1;
-    }
-    logger(INFO) << "Core initialized OK";
-
-    // start components
     if (!command_line::has_arg(vm, arg_console)) {
       dch.start_handling();
     }
@@ -286,13 +312,11 @@ int main(int argc, char* argv[])
     rpcServer.stop();
 
     //deinitialize components
-    logger(INFO) << "Deinitializing core...";
-    ccore.deinit();
     logger(INFO) << "Deinitializing p2p...";
     p2psrv.deinit();
 
-    ccore.set_cryptonote_protocol(NULL);
-    cprotocol.set_p2p_endpoint(NULL);
+    cprotocol.set_p2p_endpoint(nullptr);
+    ccore.save();
 
   } catch (const std::exception& e) {
     logger(ERROR, BRIGHT_RED) << "Exception: " << e.what();
