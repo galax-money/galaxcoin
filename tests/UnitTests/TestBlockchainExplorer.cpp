@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "gtest/gtest.h"
 
 #include <system_error>
@@ -689,7 +688,6 @@ TEST_F(BlockchainExplorerTests, getFullRewardMaxBlockSize) {
   ASSERT_EQ(blockchainExplorer.getFullRewardMaxBlockSize(1), parameters::CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1);
   ASSERT_EQ(blockchainExplorer.getFullRewardMaxBlockSize(2), parameters::CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V2);
   ASSERT_EQ(blockchainExplorer.getFullRewardMaxBlockSize(3), parameters::CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE);
-
 }
 
 TEST_F(BlockchainExplorerTests, getFullRewardMaxBlockSizeNotInited) {

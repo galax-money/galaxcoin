@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include <fstream>
 
 #include <boost/filesystem.hpp>
@@ -31,7 +30,6 @@
 #include "Common/Util.h"
 #include "crypto/hash.h"
 #include "CryptoNoteCore/Core.h"
-
 #include "CryptoNoteCore/Currency.h"
 #include "CryptoNoteCore/DatabaseBlockchainCache.h"
 #include "CryptoNoteCore/DatabaseBlockchainCacheFactory.h"
@@ -47,7 +45,6 @@
 #include "Serialization/BinaryOutputStreamSerializer.h"
 #include "version.h"
 
-#include "Logging/ConsoleLogger.h"
 #include <Logging/LoggerManager.h>
 
 #if defined(WIN32)
@@ -69,22 +66,9 @@ namespace
   const command_line::arg_descriptor<bool>        arg_console     = {"no-console", "Disable daemon console commands"};
   const command_line::arg_descriptor<bool>        arg_testnet_on  = {"testnet", "Used to deploy test nets. Checkpoints and hardcoded seeds are ignored, "
     "network id is changed. Use it with --data-dir flag. The wallet must be launched with --testnet flag.", false};
-  const command_line::arg_descriptor<bool>        arg_print_genesis_tx = { "print-genesis-tx", "Prints genesis' block tx hex to insert it to config and exits" };
 }
 
 bool command_line_preprocessor(const boost::program_options::variables_map& vm, LoggerRef& logger);
-
-void print_genesis_tx_hex() {
-  Logging::ConsoleLogger logger;
-  CryptoNote::Transaction tx = CryptoNote::CurrencyBuilder(logger).generateGenesisTransaction();
-  CryptoNote::BinaryArray txb = CryptoNote::toBinaryArray(tx);
-  std::string tx_hex = Common::toHex(txb);
-
-  std::cout << "Insert this line into your coin configuration file as is: " << std::endl;
-  std::cout << "const char GENESIS_COINBASE_TX_HEX[] = \"" << tx_hex << "\";" << std::endl;
-
-  return;
-}
 
 JsonValue buildLoggerConfiguration(Level level, const std::string& logfile) {
   JsonValue loggerConfiguration(JsonValue::OBJECT);
@@ -130,7 +114,6 @@ int main(int argc, char* argv[])
     command_line::add_arg(desc_cmd_sett, arg_log_level);
     command_line::add_arg(desc_cmd_sett, arg_console);
     command_line::add_arg(desc_cmd_sett, arg_testnet_on);
-    command_line::add_arg(desc_cmd_sett, arg_print_genesis_tx);
 
     RpcServerConfig::initOptions(desc_cmd_sett);
     NetNodeConfig::initOptions(desc_cmd_sett);
@@ -149,11 +132,6 @@ int main(int argc, char* argv[])
       {
         std::cout << CryptoNote::CRYPTONOTE_NAME << " v" << PROJECT_VERSION_LONG << ENDL << ENDL;
         std::cout << desc_options << std::endl;
-        return false;
-      }
-
-      if (command_line::get_arg(vm, arg_print_genesis_tx)) {
-        print_genesis_tx_hex();
         return false;
       }
 
@@ -209,14 +187,6 @@ int main(int argc, char* argv[])
     //create objects and link them
     CryptoNote::CurrencyBuilder currencyBuilder(logManager);
     currencyBuilder.testnet(testnet_mode);
-
-    try {
-      currencyBuilder.currency();
-    } catch (std::exception&) {
-      std::cout << "GENESIS_COINBASE_TX_HEX constant has an incorrect value. Please launch: " << CryptoNote::CRYPTONOTE_NAME << "d --" << arg_print_genesis_tx.name;
-      return 1;
-    }
-
     CryptoNote::Currency currency = currencyBuilder.currency();
 
     CryptoNote::Checkpoints checkpoints(logManager);

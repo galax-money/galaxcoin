@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "CryptoNoteProtocolHandler.h"
 
 #include <future>
@@ -520,6 +519,8 @@ int CryptoNoteProtocolHandler::handle_request_chain(int command, NOTIFY_REQUEST_
 
   if (arg.block_ids.back() != m_core.getBlockHashByIndex(0)) {
     logger(Logging::ERROR) << context << "Failed to handle NOTIFY_REQUEST_CHAIN. block_ids doesn't end with genesis block ID";
+    logger(Logging::DEBUGGING) << context << "block_ids.back : " << arg.block_ids.back();
+    logger(Logging::DEBUGGING) << context << "m_core.getBlockHashByIndex(0) : " << m_core.getBlockHashByIndex(0);
     context.m_state = CryptoNoteConnectionContext::state_shutdown;
     return 1;
   }

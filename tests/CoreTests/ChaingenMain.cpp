@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "Chaingen.h"
 
 #include "Common/CommandLine.h"
@@ -30,6 +29,7 @@
 #include "RingSignature.h"
 #include "TransactionTests.h"
 #include "TransactionValidation.h"
+#include "Upgrade.h"
 #include "RandomOuts.h"
 
 namespace po = boost::program_options;
@@ -176,7 +176,6 @@ int main(int argc, char* argv[]) {
       if (!failed_tests.empty()) {
         std::cout << "FAILED TESTS:\n";
         BOOST_FOREACH (auto test_name, failed_tests) { std::cout << "  " << test_name << '\n'; }
-
       }
       std::cout << concolor::normal << std::endl;
     } else if (command_line::get_arg(vm, arg_test_transactions)) {

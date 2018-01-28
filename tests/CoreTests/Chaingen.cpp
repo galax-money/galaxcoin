@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "Chaingen.h"
 
 #include <iostream>
@@ -33,6 +32,7 @@
 #include "CryptoNoteCore/CryptoNoteTools.h"
 #include "CryptoNoteCore/Core.h"
 #include "CryptoNoteCore/Currency.h"
+#include "CryptoNoteCore/UpgradeDetector.h"
 
 //#include "AccountBoostSerialization.h"
 //#include "cryptonote_boost_serialization.h"

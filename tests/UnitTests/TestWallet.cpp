@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "gtest/gtest.h"
 
 #include <chrono>
@@ -4375,4 +4374,3 @@ TEST_F(WalletApi, walletExportFailedIfFileAlreadyExists) {
     ASSERT_EQ(1, boost::filesystem::file_size(BOB_WALLET_PATH));
   }
 }
-

@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #pragma once
 
 #include <cstdint>
@@ -87,7 +86,6 @@ public:
   uint32_t maxUpgradeDistance() const { return 7 * m_upgradeWindow; }
   uint32_t calculateUpgradeHeight(uint32_t voteCompleteHeight) const { return voteCompleteHeight + m_upgradeWindow; }
 
-
   const std::string& blocksFileName() const { return m_blocksFileName; }
   const std::string& blockIndexesFileName() const { return m_blockIndexesFileName; }
   const std::string& txPoolFileName() const { return m_txPoolFileName; }
@@ -103,7 +101,6 @@ public:
 
   bool constructMinerTx(uint8_t blockMajorVersion, uint32_t height, size_t medianSize, uint64_t alreadyGeneratedCoins, size_t currentBlockSize,
     uint64_t fee, const AccountPublicAddress& minerAddress, Transaction& tx, const BinaryArray& extraNonce = BinaryArray(), size_t maxOuts = 1) const;
-
 
   bool isFusionTransaction(const Transaction& transaction) const;
   bool isFusionTransaction(const Transaction& transaction, size_t size) const;
@@ -126,7 +123,6 @@ public:
   bool checkProofOfWork(Crypto::cn_context& context, const CachedBlock& block, Difficulty currentDifficulty) const;
 
   Currency(Currency&& currency);
-
 
   size_t getApproximateMaximumInputCount(size_t transactionSize, size_t outputCount, size_t mixinCount) const;
 
@@ -187,7 +183,6 @@ private:
   uint32_t m_upgradeVotingWindow;
   uint32_t m_upgradeWindow;
 
-
   std::string m_blocksFileName;
   std::string m_blockIndexesFileName;
   std::string m_txPoolFileName;
@@ -217,7 +212,6 @@ public:
   }
 
   CurrencyBuilder& maxBlockNumber(uint32_t val) { m_currency.m_maxBlockHeight = val; return *this; }
-
   CurrencyBuilder& maxBlockBlobSize(size_t val) { m_currency.m_maxBlockBlobSize = val; return *this; }
   CurrencyBuilder& maxTxSize(size_t val) { m_currency.m_maxTxSize = val; return *this; }
   CurrencyBuilder& publicAddressBase58Prefix(uint64_t val) { m_currency.m_publicAddressBase58Prefix = val; return *this; }
@@ -263,7 +257,6 @@ public:
   CurrencyBuilder& upgradeVotingThreshold(unsigned int val);
   CurrencyBuilder& upgradeVotingWindow(uint32_t val) { m_currency.m_upgradeVotingWindow = val; return *this; }
   CurrencyBuilder& upgradeWindow(uint32_t val);
-
 
   CurrencyBuilder& blocksFileName(const std::string& val) { m_currency.m_blocksFileName = val; return *this; }
   CurrencyBuilder& blockIndexesFileName(const std::string& val) { m_currency.m_blockIndexesFileName = val; return *this; }

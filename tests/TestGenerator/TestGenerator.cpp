@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "TestGenerator.h"
 
 #include <Common/Math.h>
@@ -77,7 +76,6 @@ void test_generator::addBlock(const CryptoNote::CachedBlock& blk, size_t tsxSize
   m_currency.getBlockReward(blk.getBlock().majorVersion, Common::medianValue(blockSizes), blockSize,
                             alreadyGeneratedCoins, fee, blockReward, emissionChange);
   m_blocksInfo[blk.getBlockHash()] = BlockInfo(blk.getBlock().previousBlockHash, alreadyGeneratedCoins + emissionChange, blockSize);
-
 }
 
 bool test_generator::constructBlock(CryptoNote::BlockTemplate& blk, uint32_t height, const Crypto::Hash& previousBlockHash,
@@ -161,7 +159,6 @@ bool test_generator::constructBlock(CryptoNote::BlockTemplate& blk, uint32_t hei
     }
   }
 
-
   // Nonce search...
   blk.nonce = 0;
   Crypto::cn_context context;
@@ -214,7 +211,6 @@ bool test_generator::constructBlockManually(BlockTemplate& blk, const BlockTempl
 
   uint32_t height = prevCachedBlock.getBlockIndex() + 1;
   uint64_t alreadyGeneratedCoins = getAlreadyGeneratedCoins(prevCachedBlock.getBlockHash());
-
   std::vector<size_t> blockSizes;
   getLastNBlockSizes(blockSizes, prevCachedBlock.getBlockHash(), m_currency.rewardBlocksWindow());
   if (actualParams & bf_miner_tx) {
@@ -248,7 +244,6 @@ bool test_generator::constructBlockManually(BlockTemplate& blk, const BlockTempl
   }
 
   Difficulty aDiffic = actualParams & bf_diffic ? diffic : getTestDifficulty();
-
   if (1 < aDiffic) {
     fillNonce(blk, aDiffic);
   }
@@ -279,7 +274,6 @@ bool test_generator::constructMaxSizeBlock(CryptoNote::BlockTemplate& blk, const
   size_t blockGrantedFullRewardZone = m_currency.blockGrantedFullRewardZoneByBlockVersion(defaultMajorVersion);
   median = std::max(median, blockGrantedFullRewardZone);
 
-
   uint64_t totalFee = 0;
   size_t txsSize = 0;
   std::vector<Crypto::Hash> transactionHashes;
@@ -295,7 +289,6 @@ bool test_generator::constructMaxSizeBlock(CryptoNote::BlockTemplate& blk, const
   Transaction baseTransaction;
   bool r = constructMinerTxBySize(m_currency, baseTransaction, defaultMajorVersion, cachedPrevBlock.getBlockIndex() + 1,
     getAlreadyGeneratedCoins(cachedPrevBlock.getBlockHash()), minerAccount.getAccountKeys().address, blockSizes, 2 * median - txsSize, 2 * median, totalFee);
-
   if (!r) {
     return false;
   }
@@ -329,7 +322,6 @@ bool constructMinerTxManually(const CryptoNote::Currency& currency, uint8_t bloc
   int64_t emissionChange;
   uint64_t blockReward;
   if (!currency.getBlockReward(blockMajorVersion, 0, 0, alreadyGeneratedCoins, fee, blockReward, emissionChange)) {
-
     std::cerr << "Block is too big" << std::endl;
     return false;
   }
@@ -354,7 +346,6 @@ bool constructMinerTxBySize(const CryptoNote::Currency& currency, CryptoNote::Tr
                             uint64_t alreadyGeneratedCoins, const CryptoNote::AccountPublicAddress& minerAddress,
                             std::vector<size_t>& blockSizes, size_t targetTxSize, size_t targetBlockSize, uint64_t fee/* = 0*/) {
   if (!currency.constructMinerTx(blockMajorVersion, height, Common::medianValue(blockSizes), alreadyGeneratedCoins, targetBlockSize,
-
       fee, minerAddress, baseTransaction, CryptoNote::BinaryArray(), 1)) {
     return false;
   }

@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "BaseFunctionalTests.h"
 
 #include <vector>
@@ -48,9 +47,9 @@
 #endif
 
 #ifdef _WIN32
-const std::string DAEMON_FILENAME = std::string(CRYPTONOTE_NAME) + "d.exe";
+const std::string DAEMON_FILENAME = "bytecoind.exe";
 #else
-const std::string DAEMON_FILENAME = std::string(CRYPTONOTE_NAME) + "d";
+const std::string DAEMON_FILENAME = "bytecoind";
 #endif
 
 using namespace Tests::Common;
@@ -167,7 +166,7 @@ void BaseFunctionalTests::startNode(size_t index) {
     << "rpc-bind-port=" << rpcPort << std::endl
     << "p2p-bind-port=" << p2pPort << std::endl
     << "log-level=4" << std::endl
-    << "log-file=test_" << CRYPTONOTE_NAME << "d_" << index << ".log" << std::endl;
+    << "log-file=test_bytecoind_" << index << ".log" << std::endl;
 
   switch (m_topology) {
   case Line:
@@ -202,7 +201,7 @@ void BaseFunctionalTests::startNode(size_t index) {
   }
 
 #if defined WIN32
-  std::string commandLine = "start /MIN \"" + std::string(CRYPTONOTE_NAME) + "d" + std::to_string(index) + "\" \"" + daemonPath.string() +
+  std::string commandLine = "start /MIN \"bytecoind" + std::to_string(index) + "\" \"" + daemonPath.string() +
     "\" --testnet --data-dir=\"" + dataDirPath + "\" --config-file=daemon.conf";
   LOG_DEBUG(commandLine);
   system(commandLine.c_str());
@@ -214,7 +213,7 @@ void BaseFunctionalTests::startNode(size_t index) {
     close(2);
     std::string dataDir = "--data-dir=" + dataDirPath + "";
     LOG_TRACE(pathToDaemon);
-    if (execl(pathToDaemon.c_str(), (std::string(CRYPTONOTE_NAME) + "d").c_str(), "--testnet", dataDir.c_str(), "--config-file=daemon.conf", NULL) == -1) {
+    if (execl(pathToDaemon.c_str(), "bytecoind", "--testnet", dataDir.c_str(), "--config-file=daemon.conf", NULL) == -1) {
       LOG_ERROR(TO_STRING(errno));
     }
     abort();
@@ -350,7 +349,6 @@ bool BaseFunctionalTests::prepareAndSubmitBlock(TestNode& node, CryptoNote::Bloc
       return false;
     }
   }
-
 
   BinaryArray blockBlob = CryptoNote::toBinaryArray(blockTemplate);
   return node.submitBlock(::Common::toHex(blockBlob.data(), blockBlob.size()));

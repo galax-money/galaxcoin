@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "ICoreStub.h"
 
 #include "CryptoNoteCore/CryptoNoteFormatUtils.h"
@@ -215,7 +214,6 @@ CryptoNote::Difficulty ICoreStub::getBlockDifficulty(uint32_t height) const {
 }
 
 void ICoreStub::addBlock(const CryptoNote::BlockTemplate& block) {
-
   uint32_t height = boost::get<CryptoNote::BaseInput>(block.baseTransaction.inputs.front()).blockIndex;
   auto hash = CryptoNote::CachedBlock(block).getBlockHash();
   if (height > topHeight || blocks.empty()) {

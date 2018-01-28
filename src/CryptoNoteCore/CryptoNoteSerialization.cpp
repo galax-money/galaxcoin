@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "CryptoNoteSerialization.h"
 
 #include <algorithm>
@@ -363,13 +362,11 @@ void serialize(ParentBlockSerializer& pbs, ISerializer& serializer) {
   for (Crypto::Hash& hash: pbs.m_parentBlock.blockchainBranch) {
     serializer(hash, "");
   }
-
 }
 
 void serializeBlockHeader(BlockHeader& header, ISerializer& serializer) {
   serializer(header.majorVersion, "major_version");
   if (header.majorVersion > BLOCK_MAJOR_VERSION_3) {
-
     throw std::runtime_error("Wrong major version");
   }
 
@@ -383,7 +380,6 @@ void serializeBlockHeader(BlockHeader& header, ISerializer& serializer) {
   } else {
     throw std::runtime_error("Wrong major version");
   }
-
 }
 
 void serialize(BlockHeader& header, ISerializer& serializer) {
@@ -398,7 +394,6 @@ void serialize(BlockTemplate& block, ISerializer& serializer) {
     serializer(parentBlockSerializer, "parent_block");
   }
 
-
   serializer(block.baseTransaction, "miner_tx");
   serializer(block.transactionHashes, "tx_hashes");
 }
@@ -412,6 +407,29 @@ void serialize(AccountKeys& keys, ISerializer& s) {
   s(keys.address, "m_account_address");
   s(keys.spendSecretKey, "m_spend_secret_key");
   s(keys.viewSecretKey, "m_view_secret_key");
+}
+
+void doSerialize(TransactionExtraMergeMiningTag& tag, ISerializer& serializer) {
+  uint64_t depth = static_cast<uint64_t>(tag.depth);
+  serializer(depth, "depth");
+  tag.depth = static_cast<size_t>(depth);
+  serializer(tag.merkleRoot, "merkle_root");
+}
+
+void serialize(TransactionExtraMergeMiningTag& tag, ISerializer& serializer) {
+  if (serializer.type() == ISerializer::OUTPUT) {
+    std::string field;
+    StringOutputStream os(field);
+    BinaryOutputStreamSerializer output(os);
+    doSerialize(tag, output);
+    serializer(field, "");
+  } else {
+    std::string field;
+    serializer(field, "");
+    MemoryInputStream stream(field.data(), field.size());
+    BinaryInputStreamSerializer input(stream);
+    doSerialize(tag, input);
+  }
 }
 
 void serialize(KeyPair& keyPair, ISerializer& serializer) {

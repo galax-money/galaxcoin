@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "Currency.h"
 #include <cctype>
 #include <boost/algorithm/string/trim.hpp>
@@ -29,6 +28,7 @@
 #include "CryptoNoteFormatUtils.h"
 #include "CryptoNoteTools.h"
 #include "TransactionExtra.h"
+#include "UpgradeDetector.h"
 
 #undef ERROR
 
@@ -76,7 +76,6 @@ bool Currency::init() {
   if (isTestnet()) {
     m_upgradeHeightV2 = 0;
     m_upgradeHeightV3 = static_cast<uint32_t>(-1);
-
     m_blocksFileName = "testnet_" + m_blocksFileName;
     m_blockIndexesFileName = "testnet_" + m_blockIndexesFileName;
     m_txPoolFileName = "testnet_" + m_txPoolFileName;
@@ -88,7 +87,13 @@ bool Currency::init() {
 bool Currency::generateGenesisBlock() {
   genesisBlockTemplate = boost::value_initialized<BlockTemplate>();
 
-  // Hard code coinbase tx in genesis block, because "tru" generating tx use random, but genesis should be always the same
+  //account_public_address ac = boost::value_initialized<AccountPublicAddress>();
+  //std::vector<size_t> sz;
+  //constructMinerTx(0, 0, 0, 0, 0, ac, m_genesisBlock.baseTransaction); // zero fee in genesis
+  //BinaryArray txb = toBinaryArray(m_genesisBlock.baseTransaction);
+  //std::string hex_tx_represent = Common::toHex(txb);
+
+  // Hard code coinbase tx in genesis block, because through generating tx use random, but genesis should be always the same
   std::string genesisCoinbaseTxHex = GENESIS_COINBASE_TX_HEX;
   BinaryArray minerTxBlob;
 
@@ -134,7 +139,6 @@ uint32_t Currency::upgradeHeight(uint8_t majorVersion) const {
 }
 
 bool Currency::getBlockReward(uint8_t blockMajorVersion, size_t medianSize, size_t currentBlockSize, uint64_t alreadyGeneratedCoins,
-
   uint64_t fee, uint64_t& reward, int64_t& emissionChange) const {
   assert(alreadyGeneratedCoins <= m_moneySupply);
   assert(m_emissionSpeedFactor > 0 && m_emissionSpeedFactor <= 8 * sizeof(uint64_t));
@@ -143,15 +147,13 @@ bool Currency::getBlockReward(uint8_t blockMajorVersion, size_t medianSize, size
 
   size_t blockGrantedFullRewardZone = blockGrantedFullRewardZoneByBlockVersion(blockMajorVersion);
   medianSize = std::max(medianSize, blockGrantedFullRewardZone);
-
   if (currentBlockSize > UINT64_C(2) * medianSize) {
     logger(TRACE) << "Block cumulative size is too big: " << currentBlockSize << ", expected less than " << 2 * medianSize;
     return false;
   }
 
   uint64_t penalizedBaseReward = getPenalizedAmount(baseReward, medianSize, currentBlockSize);
-  uint64_t penalizedFee = blockMajorVersion >= BLOCK_MAJOR_VERSION_2 ? getPenalizedAmount(fee, medianSize, currentBlockSize) : fee;
-
+  uint64_t penalizedFee = blockMajorVersion <= BLOCK_MAJOR_VERSION_2 ? getPenalizedAmount(fee, medianSize, currentBlockSize) : fee;
 
   emissionChange = penalizedBaseReward - (fee - penalizedFee);
   reward = penalizedBaseReward + penalizedFee;
@@ -169,7 +171,6 @@ size_t Currency::maxBlockCumulativeSize(uint64_t height) const {
 
 bool Currency::constructMinerTx(uint8_t blockMajorVersion, uint32_t height, size_t medianSize, uint64_t alreadyGeneratedCoins, size_t currentBlockSize,
   uint64_t fee, const AccountPublicAddress& minerAddress, Transaction& tx, const BinaryArray& extraNonce/* = BinaryArray()*/, size_t maxOuts/* = 1*/) const {
-
 
   tx.inputs.clear();
   tx.outputs.clear();
@@ -189,7 +190,6 @@ bool Currency::constructMinerTx(uint8_t blockMajorVersion, uint32_t height, size
   uint64_t blockReward;
   int64_t emissionChange;
   if (!getBlockReward(blockMajorVersion, medianSize, currentBlockSize, alreadyGeneratedCoins, fee, blockReward, emissionChange)) {
-
     logger(INFO) << "Block is too big";
     return false;
   }
@@ -442,7 +442,6 @@ Difficulty Currency::nextDifficulty(std::vector<uint64_t> timestamps,
 
 bool Currency::checkProofOfWorkV1(Crypto::cn_context& context, const CachedBlock& block, Difficulty currentDifficulty) const {
   if (BLOCK_MAJOR_VERSION_1 != block.getBlock().majorVersion) {
-
     return false;
   }
 
@@ -494,7 +493,6 @@ bool Currency::checkProofOfWork(Crypto::cn_context& context, const CachedBlock& 
   logger(ERROR, BRIGHT_RED) << "Unknown block major version: " << block.getBlock().majorVersion << "." << block.getBlock().minorVersion;
   return false;
 }
-
 
 size_t Currency::getApproximateMaximumInputCount(size_t transactionSize, size_t outputCount, size_t mixinCount) const {
   const size_t KEY_IMAGE_SIZE = sizeof(Crypto::KeyImage);
@@ -612,20 +610,11 @@ CurrencyBuilder::CurrencyBuilder(Logging::ILogger& log) : m_currency(log) {
   upgradeVotingWindow(parameters::UPGRADE_VOTING_WINDOW);
   upgradeWindow(parameters::UPGRADE_WINDOW);
 
-
   blocksFileName(parameters::CRYPTONOTE_BLOCKS_FILENAME);
   blockIndexesFileName(parameters::CRYPTONOTE_BLOCKINDEXES_FILENAME);
   txPoolFileName(parameters::CRYPTONOTE_POOLDATA_FILENAME);
 
   testnet(false);
-}
-
-Transaction CurrencyBuilder::generateGenesisTransaction() {
-  CryptoNote::Transaction tx;
-  CryptoNote::AccountPublicAddress ac = boost::value_initialized<CryptoNote::AccountPublicAddress>();
-  m_currency.constructMinerTx(0, 0, 0, 0, 0, ac, tx); // zero fee in genesis
-
-  return tx;
 }
 
 CurrencyBuilder& CurrencyBuilder::emissionSpeedFactor(unsigned int val) {
@@ -672,6 +661,5 @@ CurrencyBuilder& CurrencyBuilder::upgradeWindow(uint32_t val) {
   m_currency.m_upgradeWindow = val;
   return *this;
 }
-
 
 }

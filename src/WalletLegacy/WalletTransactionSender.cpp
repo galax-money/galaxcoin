@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "crypto/crypto.h" //for rand()
 #include "CryptoNoteCore/Account.h"
 #include "CryptoNoteCore/CryptoNoteFormatUtils.h"
@@ -86,7 +85,6 @@ WalletTransactionSender::WalletTransactionSender(const Currency& currency, Walle
   m_transferDetails(transfersContainer),
   m_upperTransactionSizeLimit(parameters::CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_CURRENT * 125 / 100 - m_currency.minerTxBlobReservedSize()) {
 }
-
 
 void WalletTransactionSender::stop() {
   m_isStoping = true;

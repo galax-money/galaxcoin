@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "gtest/gtest.h"
 
 #include <algorithm>
@@ -305,7 +304,7 @@ TEST_F(tx_pool, fillblock_same_fee)
   uint64_t median = 5000;
 
   ASSERT_TRUE(pool.fill_block_template(bl, median, textMaxCumulativeSize, 0, totalSize, txFee));
-  ASSERT_TRUE(totalSize <= 2 * median);
+  ASSERT_TRUE(totalSize*100 < median*125);
 
   // now, check that the block is opimally filled
   // if fee is fixed, transactions with smaller number of outputs should be included
@@ -365,7 +364,7 @@ TEST_F(tx_pool, fillblock_same_size)
   uint64_t median = 5000;
 
   ASSERT_TRUE(pool.fill_block_template(bl, median, textMaxCumulativeSize, 0, totalSize, txFee));
-  ASSERT_TRUE(totalSize <= 2 * median);
+  ASSERT_TRUE(totalSize * 100 < median * 125);
 
   // check that fill_block_template prefers transactions with double fee
 
@@ -705,7 +704,7 @@ namespace {
 
 const size_t TEST_FUSION_TX_COUNT_PER_BLOCK = 3;
 const size_t TEST_TX_COUNT_UP_TO_MEDIAN = 10;
-const size_t TEST_MAX_TX_COUNT_PER_BLOCK = 2 * TEST_TX_COUNT_UP_TO_MEDIAN;
+const size_t TEST_MAX_TX_COUNT_PER_BLOCK = TEST_TX_COUNT_UP_TO_MEDIAN * 125 / 100;
 const size_t TEST_TRANSACTION_SIZE = 2000;
 const size_t TEST_FUSION_TX_MAX_SIZE = TEST_FUSION_TX_COUNT_PER_BLOCK * TEST_TRANSACTION_SIZE;
 const size_t TEST_MINER_TX_BLOB_RESERVED_SIZE = 600;

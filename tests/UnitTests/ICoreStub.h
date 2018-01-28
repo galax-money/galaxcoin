@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #pragma once
 
 #include <cstdint>
@@ -84,7 +83,6 @@ public:
   virtual CryptoNote::BlockTemplate getBlockByHash(const Crypto::Hash &h) const override;
   virtual void getTransactions(const std::vector<Crypto::Hash>& txs_ids, std::vector<CryptoNote::BinaryArray>& txs, std::vector<Crypto::Hash>& missed_txs) const override;
   virtual CryptoNote::Difficulty getBlockDifficulty(uint32_t index) const override;
-
 
 
   bool addObserver(CryptoNote::ICoreObserver* observer);

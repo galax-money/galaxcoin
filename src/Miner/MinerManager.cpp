@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "MinerManager.h"
 
 #include <System/EventLock.h>
@@ -63,7 +62,6 @@ void adjustMergeMiningTag(BlockTemplate& blockTemplate) {
     }
   }
 }
-
 
 }
 
@@ -264,7 +262,6 @@ BlockMiningParameters MinerManager::requestMiningParameters(System::Dispatcher& 
 
 void MinerManager::adjustBlockTemplate(CryptoNote::BlockTemplate& blockTemplate) const {
   adjustMergeMiningTag(blockTemplate);
-
 
   if (m_config.firstBlockTimestamp == 0) {
     //no need to fix timestamp

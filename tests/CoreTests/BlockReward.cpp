@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "BlockReward.h"
 
 #include <numeric>
@@ -123,7 +122,7 @@ bool gen_block_reward::generate(std::vector<test_event_entry>& events) const {
   MAKE_NEXT_BLOCK_TX_LIST(events, blk_7, blk_6, miner_account, txs_0);
   DO_CALLBACK(events, "mark_checked_block");
 
-  // Test: block reward == 0
+  // Test: block reward == transactions fee
   {
     Transaction tx_1 = construct_tx_with_fee(m_logger, events, blk_5, miner_account, bob_account, MK_COINS(1),
                                              11 * m_currency->minimumFee());
@@ -224,7 +223,6 @@ bool gen_block_reward::check_block_rewards(CryptoNote::Core& /*c*/, size_t /*ev_
 
   BlockTemplate blk_n3 = extract(events[m_checked_blocks_indices[7]]);
   CHECK_EQ((11 + 13) * m_currency->minimumFee(), get_tx_out_amount(blk_n3.baseTransaction));
-
 
   return true;
 }

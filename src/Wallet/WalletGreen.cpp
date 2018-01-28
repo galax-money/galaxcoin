@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "WalletGreen.h"
 
 #include <algorithm>
@@ -148,7 +147,6 @@ WalletGreen::WalletGreen(System::Dispatcher& dispatcher, const Currency& currenc
   m_transactionSoftLockTime(transactionSoftLockTime)
 {
   m_upperTransactionSizeLimit = parameters::CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_CURRENT * 125 / 100 - m_currency.minerTxBlobReservedSize();
-
   m_readyEvent.set();
 }
 

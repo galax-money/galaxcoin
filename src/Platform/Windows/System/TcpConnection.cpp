@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "TcpConnection.h"
 #include <cassert>
 #ifndef WIN32_LEAN_AND_MEAN

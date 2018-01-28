@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #pragma once
 
 #include "CryptoNoteBasic.h"
@@ -60,7 +59,6 @@ void serialize(BlockHeader& header, ISerializer& serializer);
 void serialize(BlockTemplate& block, ISerializer& serializer);
 void serialize(ParentBlockSerializer& pbs, ISerializer& serializer);
 void serialize(TransactionExtraMergeMiningTag& tag, ISerializer& serializer);
-
 
 void serialize(AccountPublicAddress& address, ISerializer& serializer);
 void serialize(AccountKeys& keys, ISerializer& s);

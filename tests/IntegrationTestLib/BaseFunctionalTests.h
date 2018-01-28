@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #pragma once
 
 #include <list>
@@ -80,7 +79,7 @@ namespace Tests {
 
       void init(po::options_description& desc) {
         desc.add_options()
-          ("daemon-dir,d", po::value<std::string>()->default_value("."), "path to daemon")
+          ("daemon-dir,d", po::value<std::string>()->default_value("."), "path to bytecoind.exe")
           ("data-dir,n", po::value<std::string>()->default_value("."), "path to daemon's data directory")
           ("add-daemons,a", po::value<std::vector<std::string>>()->multitoken(), "add daemon to topology");
       }

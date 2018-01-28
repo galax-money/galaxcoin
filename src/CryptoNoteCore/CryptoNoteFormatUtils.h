@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #pragma once
 
 #include <boost/utility/value_init.hpp>
@@ -77,7 +76,6 @@ uint64_t get_outs_money_amount(const Transaction& tx);
 std::string short_hash_str(const Crypto::Hash& h);
 
 std::vector<uint32_t> relativeOutputOffsetsToAbsolute(const std::vector<uint32_t>& off);
-
 std::vector<uint32_t> absolute_output_offsets_to_relative(const std::vector<uint32_t>& off);
 
 

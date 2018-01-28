@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "BlockchainExplorer.h"
 
 #include <future>
@@ -449,7 +448,6 @@ uint64_t BlockchainExplorer::getFullRewardMaxBlockSize(uint8_t majorVersion) {
   } else {
     return parameters::CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1;
   }
-
 }
 
 bool BlockchainExplorer::isSynchronized() {

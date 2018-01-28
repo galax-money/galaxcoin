@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "RpcNodeConfiguration.h"
 
 namespace PaymentService {
@@ -29,8 +28,8 @@ RpcNodeConfiguration::RpcNodeConfiguration() {
 
 void RpcNodeConfiguration::initOptions(boost::program_options::options_description& desc) {
   desc.add_options()
-    ("daemon-address", po::value<std::string>()->default_value("localhost"), "daemon address")
-    ("daemon-port", po::value<uint16_t>()->default_value(8081), "daemon port");
+    ("daemon-address", po::value<std::string>()->default_value("localhost"), "bytecoind address")
+    ("daemon-port", po::value<uint16_t>()->default_value(8081), "bytecoind port");
 }
 
 void RpcNodeConfiguration::init(const boost::program_options::variables_map& options) {

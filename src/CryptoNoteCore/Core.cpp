@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include <algorithm>
 #include <numeric>
 #include <set>
@@ -1478,7 +1477,6 @@ void Core::initRootSegment() {
   chainsLeaves[0]->load();
 }
 
-
 void Core::importBlocksFromStorage() {
   uint32_t commonIndex = findCommonRoot(*mainChainStorage, *chainsLeaves[0]);
   assert(commonIndex <= mainChainStorage->getBlockCount());
@@ -1497,7 +1495,6 @@ void Core::importBlocksFromStorage() {
                              << " has previous block hash " << blockTemplate.previousBlockHash << ", but parent has hash " << previousBlockHash
                              << ". Resynchronize your daemon please.";
       throw std::system_error(make_error_code(error::CoreErrorCode::CORRUPTED_BLOCKCHAIN));
-
     }
 
     previousBlockHash = cachedBlock.getBlockHash();
@@ -2011,7 +2008,6 @@ TransactionDetails Core::getTransactionDetails(const Crypto::Hash& transactionHa
     std::vector<CachedTransaction> transactions;
     Utils::restoreCachedTransactions(rawTransactions, transactions);
     assert(transactions.size() == 1);
-
 
     transactionDetails.inBlockchain = true;
     transactionDetails.blockIndex = segment->getBlockIndexContainingTx(transactionHash);

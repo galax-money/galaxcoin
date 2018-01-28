@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "TransactionPool.h"
 
 #include "Common/int-util.h"
@@ -77,7 +76,6 @@ bool TransactionPool::pushTransaction(CachedTransaction&& transaction, Transacti
     logger(Logging::DEBUGGING) << "pushTransaction: transaction hash already present in index";
     return false;
   }
-
 
   if (hasIntersections(poolState, transactionState)) {
     logger(Logging::DEBUGGING) << "pushTransaction: failed to merge states, some keys already used";

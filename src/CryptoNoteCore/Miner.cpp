@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "Miner.h"
 
 #include <future>
@@ -87,7 +86,6 @@ namespace CryptoNote
         return false;
       }
     }
-
 
     m_diffic = di;
     ++m_template_no;

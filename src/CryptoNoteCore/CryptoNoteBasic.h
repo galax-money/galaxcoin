@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #pragma once
 
 #include <boost/utility/value_init.hpp>
@@ -44,6 +43,5 @@ namespace CryptoNote {
     BlockTemplate& blockRef = const_cast<BlockTemplate&>(b);
     return ParentBlockSerializer(blockRef.parentBlock, blockRef.timestamp, blockRef.nonce, hashingSerialization, headerOnly);
   }
-
 
 }

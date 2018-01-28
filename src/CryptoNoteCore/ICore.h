@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #pragma once
 #include <vector>
 #include <CryptoNote.h>
@@ -40,7 +39,6 @@ class ICore {
 public:
   virtual ~ICore() {
   }
-
 
   virtual bool addMessageQueue(MessageQueue<BlockchainMessage>& messageQueue) = 0;
   virtual bool removeMessageQueue(MessageQueue<BlockchainMessage>& messageQueue) = 0;
