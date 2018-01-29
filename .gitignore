@@ -6,3 +6,8 @@
 .ycm_extra_conf.pyc
 Release
 Debug
+/external/rocksdb/**/*.o
+/external/rocksdb/**/*.d
+/external/rocksdb/lib*.a
+/external/rocksdb/make_config.m
+/external/rocksdb/make_config.mk
