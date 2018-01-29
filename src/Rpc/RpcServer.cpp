@@ -137,6 +137,11 @@ RpcServer::RpcServer(System::Dispatcher& dispatcher, Logging::ILogger& log, Core
 
 void RpcServer::processRequest(const HttpRequest& request, HttpResponse& response) {
   auto url = request.getUrl();
+
+  for (const auto& cors_domain: m_cors_domains) {
+    response.addHeader("Access-Control-Allow-Origin", cors_domain);
+  }
+
   if (url.find(".bin") == std::string::npos) {
       logger(TRACE) << "RPC request came: \n" << request << std::endl;
   } else {
