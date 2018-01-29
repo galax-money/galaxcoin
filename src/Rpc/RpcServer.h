@@ -34,6 +34,7 @@ public:
   RpcServer(System::Dispatcher& dispatcher, Logging::ILogger& log, Core& c, NodeServer& p2p, ICryptoNoteProtocolHandler& protocol);
 
   typedef std::function<bool(RpcServer*, const HttpRequest& request, HttpResponse& response)> HandlerFunction;
+  bool enableCors(const std::vector<std::string>  domains);
 
 private:
 
@@ -93,6 +94,7 @@ private:
   Core& m_core;
   NodeServer& m_p2p;
   ICryptoNoteProtocolHandler& m_protocol;
+  std::vector<std::string> m_cors_domains;
 };
 
 }
