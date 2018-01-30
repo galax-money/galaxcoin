@@ -1,19 +1,19 @@
 matrix:
-	include:
-		- os: linux
-			addons:
-				apt:
-					sources:
-						- ubuntu-toolchain-r-test
-					packages:
-						- g++-4.8
-						- libstdc++-4.8-dev
-			env:
-				- MATRIX_EVAL="CC=gcc-4.8 && CXX=g++-4.8"
-		- os: osx
-			osx_image: xcode8
-			env:
-				- MATRIX_EVAL="brew install gcc5 && CC=gcc-5 && CXX=g++-5"
+  include:
+  - os: linux
+    addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+        packages:
+          - g++-5
+          - libstdc++-5-dev
+    env:
+      - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+  - os: osx
+    osx_image: xcode8
+    env:
+      - MATRIX_EVAL="brew install gcc5 && CC=gcc-5 && CXX=g++-5"
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq 
