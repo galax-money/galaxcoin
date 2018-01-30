@@ -1,23 +1,26 @@
+language:
+  - cpp
+
 matrix:
   include:
-  - os: linux
-    addons:
-      apt:
-        sources:
-          - ubuntu-toolchain-r-test
-        packages:
-          - g++-5
-          - libstdc++-5-dev
-    env:
-      - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
-  - os: osx
-    osx_image: xcode8
-    env:
-      - MATRIX_EVAL="brew install gcc5 && CC=gcc-5 && CXX=g++-5"
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+            - libstdc++-5-dev
+      env:
+        - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+    - os: osx
+      osx_image: xcode8
+      env:
+        - MATRIX_EVAL="brew install gcc5 && CC=gcc-5 && CXX=g++-5"
+
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq 
   - eval "${MATRIX_EVAL}"
+
 install:
   # Install newer boost compatible with gcc 4.8.
   - wget --no-verbose --output-document=boost-trunk.tar.bz2 http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download
@@ -49,6 +52,7 @@ install:
   # - clang -v
   # Instal dependencies.
   #- sudo apt-get install libboost-dev libboost-regex-dev
+
 script:
   - mkdir build
   - cd build
