@@ -147,8 +147,7 @@ struct CheckpointData {
 // You may add here other checkpoints using the following format:
 // {<block height>, "<block hash>"},
 const CheckpointData CHECKPOINTS[] = {
-  //{ 10000, "84b6345731e2702cdaadc6ce5e5238c4ca5ecf48e3447136b2ed829b8a95f3ad" },
-
+  { 5000, "c497870d81fd20931485a446a1c1c2f9f8a6c1642c71695c972c2a527dca305f" }
 };
 } // CryptoNote
 
