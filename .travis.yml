@@ -16,7 +16,7 @@ matrix:
     - os: osx
       osx_image: xcode9.2
       env:
-        - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+        - MATRIX_EVAL="CC=gcc && CXX=g++"
 
 before_install:
   - eval "${MATRIX_EVAL}"
@@ -56,6 +56,6 @@ install:
 script:
   - mkdir build
   - cd build
-  - cmake .. -DBOOST_ROOT=$BOOST_ROOT -DCMAKE_INSTALL_PREFIX:PATH=~
+  - cmake .. -DBOOST_ROOT=$BOOST_ROOT
   - make 
   #- make test
