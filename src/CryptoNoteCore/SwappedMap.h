@@ -18,6 +18,7 @@
 #pragma once
 
 #include <cstdint>
+#include <iostream>
 #include <fstream>
 #include <iomanip>
 #include <list>
