@@ -71,8 +71,8 @@ build:
   verbosity: normal
 
 after_build:
-  - 7z a c:\projects\galaxcoin\build\galaxcoin_win64.zip c:\projects\galaxcoin\build\src\Release\*.exe
+  - 7z a c:\projects\galaxcoin\galaxcoin_win64.zip c:\projects\galaxcoin\build\src\Release\*.exe
 
 artifacts:
-  - path: c:\projects\galaxcoin\build\galaxcoin_win64.zip
+  - path: galaxcoin_win64.zip
     name: GalaxCoin_Win64
