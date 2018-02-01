@@ -1,0 +1,71 @@
+#---------------------------------#
+#    environment configuration    #
+#---------------------------------#
+
+# Build worker image (VM template)
+image: Visual Studio 2015
+
+# clone directory
+clone_folder: c:\projects\galaxcoin
+
+# build cache to preserve files/folders between builds
+cache:
+  - c:\projects\deps
+
+environment:
+  BOOST_ROOTDIR: C:\Libraries\boost_1_63_0\boost\
+  BOOST_INCLUDEDIR: C:\Libraries\boost_1_63_0\
+  BOOST_LIBRARYDIR: C:\Libraries\boost_1_63_0\lib64-msvc-14.0\
+
+install:
+  ############################################################################
+  # All external dependencies are installed in C:\projects\deps
+  ############################################################################
+  - mkdir C:\projects\deps
+  - cd C:\projects\deps
+  
+  ############################################################################
+  # check CMake
+  ############################################################################
+  - cmake --version
+
+  ############################################################################
+  # Check boost
+  ############################################################################
+  - dir C:\Libraries\boost_1_63_0\   
+
+  ############################################################################
+  # Create solution files
+  ############################################################################
+  - cd C:\projects\galaxcoin
+  - mkdir build
+  - cd build
+  - cmake -G "Visual Studio 14 Win64" ..
+
+#---------------------------------#
+#       build configuration       #
+#---------------------------------#
+
+# build platform, i.e. x86, x64, Any CPU. This setting is optional.
+platform: x64
+
+# to add several platforms to build matrix:
+#platform:
+#  - x86
+#  - Any CPU
+
+# build Configuration, i.e. Debug, Release, etc.
+configuration: Release
+
+# to add several configurations to build matrix:
+#configuration:
+#  - Debug
+#  - Release
+
+build:
+  parallel: true                  # enable MSBuild parallel builds
+  project: C:\projects\galaxcoin\build\CryptoNote.sln      # path to Visual Studio solution or project
+
+  # MSBuild verbosity level
+  #verbosity: quiet|minimal|normal|detailed
+  verbosity: normal
