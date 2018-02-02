@@ -625,6 +625,7 @@ struct f_transaction_details_response {
 struct f_block_short_response {
   uint64_t timestamp;
   uint32_t height;
+  uint64_t difficulty;
   std::string hash;
   uint64_t tx_count;
   uint64_t cumul_size;
