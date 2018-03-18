@@ -42,6 +42,13 @@
 
 #include "TransactionApi.h"
 
+#ifdef NDEBUG
+#define ASSERT(x) do { (void)sizeof(x);} while (0)
+#else
+#include <assert.h>
+#define ASSERT(x) assert(x)
+#endif
+
 using namespace Crypto;
 
 namespace CryptoNote {
@@ -130,7 +137,7 @@ TransactionValidatorState extractSpentOutputs(const CachedTransaction& transacti
     if (input.type() == typeid(KeyInput)) {
       const KeyInput& in = boost::get<KeyInput>(input);
       bool r = spentOutputs.spentKeyImages.insert(in.keyImage).second;
-      assert(r);
+      ASSERT(r);
     } else {
       assert(false);
     }
@@ -1815,7 +1822,7 @@ void Core::deleteLeaf(size_t leafIndex) {
   IBlockchainCache* parent = leaf->getParent();
   if (parent != nullptr) {
     bool r = parent->deleteChild(leaf);
-    assert(r);
+    ASSERT(r);
   }
 
   auto segmentIt =
@@ -1947,12 +1954,12 @@ BlockDetails Core::getBlockDetails(const Crypto::Hash& blockHash) const {
 
   int64_t emissionChange = 0;
   bool result = currency.getBlockReward(blockDetails.majorVersion, blockDetails.sizeMedian, 0, prevBlockGeneratedCoins, 0, blockDetails.baseReward, emissionChange);
-  assert(result);
+  ASSERT(result);
 
   uint64_t currentReward = 0;
   result = currency.getBlockReward(blockDetails.majorVersion, blockDetails.sizeMedian, blockDetails.transactionsCumulativeSize,
                                    prevBlockGeneratedCoins, 0, currentReward, emissionChange);
-  assert(result);
+  ASSERT(result);
 
   if (blockDetails.baseReward == 0 && currentReward == 0) {
     blockDetails.penalty = static_cast<double>(0);
@@ -2078,7 +2085,7 @@ TransactionDetails Core::getTransactionDetails(const Crypto::Hash& transactionHa
       outputReferences.reserve(txInToKeyDetails.input.outputIndexes.size());
       std::vector<uint32_t> globalIndexes = relativeOutputOffsetsToAbsolute(txInToKeyDetails.input.outputIndexes);
       ExtractOutputKeysResult result = segment->extractKeyOtputReferences(txInToKeyDetails.input.amount, { globalIndexes.data(), globalIndexes.size() }, outputReferences);
-      assert(result == ExtractOutputKeysResult::SUCCESS);
+      ASSERT(result == ExtractOutputKeysResult::SUCCESS);
       assert(txInToKeyDetails.input.outputIndexes.size() == outputReferences.size());
 
       txInToKeyDetails.mixin = txInToKeyDetails.input.outputIndexes.size();

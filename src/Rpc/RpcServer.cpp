@@ -34,6 +34,13 @@
 #include "CoreRpcServerErrorCodes.h"
 #include "JsonRpc.h"
 
+#ifdef NDEBUG
+#define ASSERT(x) do { (void)sizeof(x);} while (0)
+#else
+#include <assert.h>
+#define ASSERT(x) assert(x)
+#endif
+
 #undef ERROR
 
 using namespace Logging;
@@ -525,9 +532,6 @@ bool RpcServer::f_on_block_json(const F_COMMAND_RPC_GET_BLOCK_DETAILS::request& 
   res.block.blockSize = blkDetails.blockSize;
   res.block.orphan_status = blkDetails.isAlternative;
 
-  uint64_t maxReward = 0;
-  uint64_t currentReward = 0;
-  int64_t emissionChange = 0;
   size_t blockGrantedFullRewardZone = m_core.getCurrency().blockGrantedFullRewardZoneByBlockVersion(block_header.major_version);
   res.block.effectiveSizeMedian = std::max(res.block.sizeMedian, blockGrantedFullRewardZone);
 
@@ -901,7 +905,7 @@ bool RpcServer::on_submitblock(const COMMAND_RPC_SUBMITBLOCK::request& req, COMM
 RawBlockLegacy RpcServer::prepareRawBlockLegacy(BinaryArray&& blockBlob) {
   BlockTemplate blockTemplate;
   bool result = fromBinaryArray(blockTemplate, blockBlob);
-  assert(result);
+  ASSERT(result);
 
   RawBlockLegacy rawBlock;
   rawBlock.block = std::move(blockBlob);

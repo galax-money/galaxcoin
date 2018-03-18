@@ -582,7 +582,8 @@ std::error_code NodeRpcProxy::doQueryBlocksLite(const std::vector<Crypto::Hash>&
   m_logger(TRACE) << "Send queryblockslite.bin request, timestamp " << req.timestamp;
   std::error_code ec = binaryCommand("/queryblockslite.bin", req, rsp);
   if (ec) {
-    m_logger(TRACE) << "queryblockslite.bin failed: " << ec << ", " << ec.message();
+    m_logger(ERROR) << "queryblockslite.bin failed: " << ec << ", " << ec.message();
+    m_logger(ERROR) << "if this error happens all the time try to do a reset";
     return ec;
   }
 
@@ -733,6 +734,9 @@ std::error_code NodeRpcProxy::binaryCommand(const std::string& url, const Reques
     EventLock eventLock(*m_httpEvent);
     invokeBinaryCommand(*m_httpClient, url, req, res);
     ec = interpretResponseStatus(res.status);
+    if (ec) {
+		m_logger(ERROR) << "NodeRpcProxy::binaryCommand, res.status " << res.status;
+	}
   } catch (const ConnectException&) {
     ec = make_error_code(error::CONNECT_ERROR);
   } catch (const std::exception&) {

@@ -24,6 +24,13 @@
 #include "crypto/hash.h"
 #include "Common/int-util.h"
 
+#ifdef NDEBUG
+#define ASSERT(x) do { (void)sizeof(x);} while (0)
+#else
+#include <assert.h>
+#define ASSERT(x) assert(x)
+#endif
+
 using namespace Crypto;
 using namespace Common;
 
@@ -64,7 +71,7 @@ namespace CryptoNote {
   std::string getAccountAddressAsStr(uint64_t prefix, const AccountPublicAddress& adr) {
     BinaryArray ba;
     bool r = toBinaryArray(adr, ba);
-    assert(r);
+    ASSERT(r);
     return Tools::Base58::encode_addr(prefix, Common::asString(ba));
   }
   //-----------------------------------------------------------------------

@@ -33,6 +33,13 @@
 #include <CryptoNoteCore/CryptoNoteBasicImpl.h>
 #include "CryptoNoteCore/TransactionExtra.h"
 
+#ifdef NDEBUG
+#define ASSERT(x) do { (void)sizeof(x);} while (0)
+#else
+#include <assert.h>
+#define ASSERT(x) assert(x)
+#endif
+
 namespace CryptoNote {
 
 namespace {
@@ -216,14 +223,14 @@ Transaction extractTransaction(const RawBlock& block, uint32_t transactionIndex)
   if (transactionIndex != 0) {
     Transaction transaction;
     bool r = fromBinaryArray(transaction, block.transactions[transactionIndex - 1]);
-    assert(r);
+    ASSERT(r);
 
     return transaction;
   }
 
   BlockTemplate blockTemplate;
   bool r = fromBinaryArray(blockTemplate, block.block);
-  assert(r);
+  ASSERT(r);
 
   return blockTemplate.baseTransaction;
 }
@@ -595,11 +602,11 @@ std::unique_ptr<IBlockchainCache> DatabaseBlockchainCache::split(uint32_t splitB
 Crypto::Hash DatabaseBlockchainCache::pushBlockToAnotherCache(IBlockchainCache& segment, PushedBlockInfo&& pushedBlockInfo) {
   BlockTemplate block;
   bool br = fromBinaryArray(block, pushedBlockInfo.rawBlock.block);
-  assert(br);
+  ASSERT(br);
 
   std::vector<CachedTransaction> transactions;
   bool tr = Utils::restoreCachedTransactions(pushedBlockInfo.rawBlock.transactions, transactions);
-  assert(tr);
+  ASSERT(tr);
 
   CachedBlock cachedBlock(block);
   segment.pushBlock(cachedBlock,

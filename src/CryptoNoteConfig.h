@@ -101,6 +101,13 @@ const char     GENESIS_COINBASE_TX_HEX[]                     = "013c01ff0001ffff
 const uint8_t  TRANSACTION_VERSION_1                         =  1;
 const uint8_t  TRANSACTION_VERSION_2                         =  2;
 const uint8_t  CURRENT_TRANSACTION_VERSION                   =  TRANSACTION_VERSION_1;
+// Special transaction which contains file meta info and hash
+const uint8_t  TRANSACTION_FILE_INFO_VERSION_1               = 51;
+// Special transaction which contains manufacturer infomation
+const uint8_t  TRANSACTION_MANUFACTURER_VERSION_1            = 61;
+// Special transaction which contains revoke information
+const uint8_t  TRANSACTION_REVOKE_VERSION_1                  = 71;
+
 const uint8_t  BLOCK_MAJOR_VERSION_1                         =  1;
 const uint8_t  BLOCK_MAJOR_VERSION_2                         =  2;
 const uint8_t  BLOCK_MAJOR_VERSION_3                         =  3;
@@ -147,7 +154,8 @@ struct CheckpointData {
 // You may add here other checkpoints using the following format:
 // {<block height>, "<block hash>"},
 const CheckpointData CHECKPOINTS[] = {
-  { 5000, "c497870d81fd20931485a446a1c1c2f9f8a6c1642c71695c972c2a527dca305f" }
+  {  5000, "c497870d81fd20931485a446a1c1c2f9f8a6c1642c71695c972c2a527dca305f" },
+  { 25000, "45f43dd797116e7ec5005b11a202a64781cd91af6d37443786a1db8a7603141d" }
 };
 } // CryptoNote
 
